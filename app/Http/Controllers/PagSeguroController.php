@@ -17,6 +17,7 @@ class PagSeguroController extends Controller
 {
     private $_configs;
     private $idInscrito;
+    private $statusCode;
     public function __construct()
     {
         Library::initialize();
@@ -25,6 +26,19 @@ class PagSeguroController extends Controller
         $this->_configs->setAccountCredentials(env('PAGSEGURO_EMAIL'), env('PAGSEGURO_TOKEN'));
         $this->_configs->setEnvironment(env('PAGSEGURO_AMBIENTE'));
         $this->idInscrito = inscrito::all()->count() + 1;
+        $this->statusCode =
+            [
+                null,
+                'aguardando pagamento',
+                'Em analise',
+                'Paga',
+                'Disponivel',
+                'Em disputa',
+                'Devolvida',
+                'Cancelada',
+                'Debitado',
+                'Retenção temporaria'
+            ];
     }
 
     public function gerarReferencia()
@@ -72,7 +86,8 @@ class PagSeguroController extends Controller
     public function painel()
     {
         $data = viewstatu::all();
-        return View('paineladmin/painel', compact('data'));
+        $status = $this->statusCode;
+        return View('paineladmin/painel', compact('data'), compact('status'));
     }
     public function teste()
     {

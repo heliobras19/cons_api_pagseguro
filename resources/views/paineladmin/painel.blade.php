@@ -24,9 +24,8 @@
             <td>{{$item->created_at}}</td>
             <td>{{$item->ocupacao}}</td>
             <td>{{$item->email}}</td>
+            <td>{{$status[$item->status]}}</td>
             <td>200.00 R$</td>
-            <td>{{$item->status}}</td>
-            <td></td>
          </tr>
         @endforeach
     </tbody>
