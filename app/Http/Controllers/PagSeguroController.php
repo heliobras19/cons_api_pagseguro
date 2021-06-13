@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\models\inscrito;
 use App\models\PagSeguro;
+use App\models\transacao;
+use App\models\viewstatu;
+use App\models\viewstatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
@@ -13,15 +16,26 @@ use PagSeguro\Library;
 class PagSeguroController extends Controller
 {
     private $_configs;
+    private $idInscrito;
     public function __construct()
     {
         Library::initialize();
-        /*        Library::cmsVersion()->setName("Nome")->setRelease("1.0.0");
-        Library::moduleVersion()->setName("Nome")->setRelease("1.0.0");*/
         $this->_configs = new Configure();
         $this->_configs->setCharset("UTF-8");
         $this->_configs->setAccountCredentials(env('PAGSEGURO_EMAIL'), env('PAGSEGURO_TOKEN'));
         $this->_configs->setEnvironment(env('PAGSEGURO_AMBIENTE'));
+        $this->idInscrito = inscrito::all()->count() + 1;
+    }
+
+    public function gerarReferencia()
+    {
+        $ref = uniqid(rand());
+        $verificar = transacao::where('referencia', '=', $ref)->count();
+        if ($verificar == 0) {
+            return $ref;
+        } else {
+            return $this->gerarReferencia();
+        }
     }
 
     public function getCredential()
@@ -35,9 +49,15 @@ class PagSeguroController extends Controller
     }
     public function finalizar(Request $request)
     {
-        $data = [$request->nome, $request->email, $request->empresa, $request->telefone, $request->celular, $request->ocupacao];
+        $referencia = $this->gerarReferencia();
+        $data = [
+            'referencia'  => $referencia,
+            'status'      => '1',
+            'id_inscrito' => $this->idInscrito
+        ];
         try {
             inscrito::create($request->all());
+            transacao::create($data);
             echo "<pre>";
             $inscrito = true;
         } catch (\Exception $e) {
@@ -46,12 +66,16 @@ class PagSeguroController extends Controller
             die($e->getMessage());
         }
         if ($inscrito == true) {
-            PagSeguro::cartao($request, $this->getCredential());
+            PagSeguro::cartao($request, $this->getCredential(), $referencia);
         }
     }
     public function painel()
     {
-        $data = inscrito::all();
+        $data = viewstatu::all();
         return View('paineladmin/painel', compact('data'));
+    }
+    public function teste()
+    {
+        return $this->idInscrito;
     }
 }

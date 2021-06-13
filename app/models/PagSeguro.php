@@ -15,11 +15,11 @@ class PagSeguro extends Model
         return view("compra/pagar", $data);
     }
 
-    public static function cartao($request, $credencial)
+    public static function cartao($request, $credencial, $referencia)
     {
         $creditCard = new \PagSeguro\Domains\Requests\DirectPayment\CreditCard();
 
-        $creditCard->setReference("LIBPHP000001");
+        $creditCard->setReference($referencia);
 
         $creditCard->setCurrency("BRL");
 

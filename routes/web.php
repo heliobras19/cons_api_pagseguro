@@ -21,3 +21,4 @@ Route::get('/', function () {
 });
 Route::get('export/', 'excelController@export')->name("exportar");
 Route::get('/painel', 'PagSeguroController@painel');
+Route::post('/notificacao_pagseguro', 'notificacaoController@notificacao');

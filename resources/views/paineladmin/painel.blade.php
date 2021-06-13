@@ -25,8 +25,8 @@
             <td>{{$item->ocupacao}}</td>
             <td>{{$item->email}}</td>
             <td>200.00 R$</td>
-            <td>Pago</td>
-            <td>apagar</td>
+            <td>{{$item->status}}</td>
+            <td></td>
          </tr>
         @endforeach
     </tbody>
