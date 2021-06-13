@@ -10,24 +10,10 @@ class notificacaoController extends Controller
 {
     private $email;
     private $token;
-    private $satusCode;
     public function __construct()
     {
         $this->email = env('PAGSEGURO_EMAIL');
         $this->token = env('PAGSEGURO_TOKEN');
-        $this->statusCode =
-            [
-                null,
-                'aguardando pagamento',
-                'Em analise',
-                'Paga',
-                'Disponivel',
-                'Em disputa',
-                'Devolvida',
-                'Cancelada',
-                'Debitado',
-                'Retenção temporaria'
-            ];
     }
 
     public function getCredenciais()
